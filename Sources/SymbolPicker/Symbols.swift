@@ -45,7 +45,6 @@ class Symbols {
     private static func loadAndParseAvailableSFSymbols() -> [String] {
         let bundleName = "com.apple.CoreGlyphs"
         let fileName = "symbol_order"
-        let keyName = "Root"
         
         var allSymbols = [String]()
         
