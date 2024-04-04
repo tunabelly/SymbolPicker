@@ -44,18 +44,21 @@ class Symbols {
     /// Return a dynamic list of available SF Symbols for the current OS.
     private static func loadAndParseAvailableSFSymbols() -> [String] {
         let bundleName = "com.apple.CoreGlyphs"
-        let fileName = "name_availability"
-        let keyName = "symbols"
+        let fileName = "symbol_order"
+        let keyName = "Root"
         
         var allSymbols = [String]()
         
-        // try to load the system bundle that contains the list
-        if let bundle = Bundle(identifier: bundleName),
-           let resourcePath = bundle.path(forResource: fileName, ofType: "plist"),
-           let plist = NSDictionary(contentsOfFile: resourcePath),
-           let plistSymbols = plist[keyName] as? [String: String] {
-            // get the list of keys, which are the symbol names
-            allSymbols = Array(plistSymbols.keys)
+        // try to load the system bundle that contains the info
+        if let bundle = Bundle(identifier: bundleName) {
+            // try to load the plist file that contains the list of SF Symbol names, in the proper display order
+            if let fileURL = bundle.url(forResource: fileName, withExtension: "plist"),
+               let fileData = try? Data(contentsOf: fileURL) {
+                // convert the data into a proper array
+                if let plistSymbols = try? PropertyListDecoder().decode([String].self, from: fileData) {
+                    allSymbols = plistSymbols
+                }
+            }
         }
         
         return allSymbols
